@@ -106,8 +106,13 @@
 			$inner.stop().queue([]);
 			$inner.fadeTo("fast", 0.5);
 		}
-
-		/* Header */
+		
+		/* Remind scroll state */
+		var $timelist = $picker.children('.datepicker_inner_container').children('.datepicker_timelist');
+		var drawBefore_timeList_scrollTop = $timelist.scrollTop();
+		console.log(drawBefore_timeList_scrollTop);
+		
+		/* Header ----- */
 		var $header = $picker.children('.datepicker_header');
 		$header.children().remove();
 		var $link_before_month = $('<a>');
@@ -129,8 +134,9 @@
 		$header.append($now_month);
 		$header.append($link_next_month);
 
-		/* Calendar > Table */
-		var $table = $picker.children('.datepicker_inner_container').children('.datepicker_calendar').children('.datepicker_table');
+		/* Calendar > Table ----- */
+		var $calendar = $picker.children('.datepicker_inner_container').children('.datepicker_calendar');
+		var $table = $calendar.children('.datepicker_table');
 		$table.children().remove();
 		var $tr = $('<tr>');
 		$table.append($tr);
@@ -209,9 +215,11 @@
 			});
 		}
 
-		/* Timelist */
-		var $timelist = $picker.children('.datepicker_inner_container').children('.datepicker_timelist');
+		/* Timelist ----- */
 		$timelist.children().remove();
+		
+		/* Set height to Timelist (Calendar innerHeight - Calendar padding) */
+		$timelist.css("height", $calendar.innerHeight() - 10 + 'px');
 
 		/* Output time cells */
 		for (var hour = 0; hour < 24; hour++) {
@@ -255,6 +263,8 @@
 				});
 			}
 		}
+		
+		$timelist.scrollTop(drawBefore_timeList_scrollTop);
 
 		if (isAnim == true) {
 			$inner.fadeTo("fast", 1.0);
@@ -311,25 +321,30 @@
 		}
 		var options = $.extend(defaults, config);
 		return this.each(function(i) {
-			init($(this), config.inputObjectId);
+			if(config == null || config.inputObjectId == undefined){
+				init($(this));
+			}else{
+				init($(this), config.inputObjectId);
+			}
 		});
 	};
 
 	/* Initialize dtpicker, append to Text input field */
 	$.fn.appendDtpicker = function(config) {
 		var defaults = {
-
+			"inline": false
 		}
 		var options = $.extend(defaults, config);
 		return this.each(function(i) {
 			/* Add input-field with inputsObjects array */
 			var input = this;
 			var inputObjectId = inputObjects.length;
-			inputObjects.push(this);
+			inputObjects.push(input);
 
 			/* Make parent-div for picker */
+			console.log(this);
 			var $d = $('<div>');
-			$d.insertAfter(this);
+			$d.insertAfter(input);
 
 			var pickerId = pickerObjects.length;
 
@@ -342,6 +357,7 @@
 			$(input).data('pickerId', pickerId);
 			
 			/* Set event handler to input-field */
+			
 			$(input).keyup(function() {
 				var $input = $(this);
 				var $picker = $(pickerObjects[$input.data('pickerId')]);
@@ -358,6 +374,16 @@
 				$(this).trigger('keyup');
 			});
 			
+			/* for NOT inline mode */
+			if(options.inline == false){
+				$picker_parent.css("position","absolute");
+				$picker_parent.hide();
+				$(input).click(function(){
+					var $input = $(this);
+					var $picker = $(pickerObjects[$input.data('pickerId')]);
+					$($picker.parent()).show();
+				});
+			}
 
 		});
 	};
