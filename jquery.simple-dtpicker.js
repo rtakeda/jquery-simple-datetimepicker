@@ -106,17 +106,36 @@
 		var d = date.getDate();
 		var hou = date.getHours();
 		var min = date.getMinutes();
+		var mmm = MONTHS_EN[date.getMonth()]; /* 3 letter month in english */
 		
-		str = str.replace(/YYYY/gi, y)
-		.replace(/YY/g, y - 2000)/* century */
-		.replace(/MM/g, zpadding(m))
-		.replace(/M/g, m)
-		.replace(/DD/g, zpadding(d))
-		.replace(/D/g, d)
-		.replace(/hh/g, zpadding(hou))
-		.replace(/h/g, hou)
-		.replace(/mm/g, zpadding(min))
-		.replace(/m/g, min);
+		if (locale == "ru") { /* not tested */
+			mmm = MONTHS_RU[date.getMonth()];
+		} else if (locale == "br") { /* not tested */
+			mmm = MONTHS_BR[date.getMonth()];
+		}
+		
+		if (str.indexOf("MMM") == -1) {
+			str = str.replace(/YYYY/gi, y)
+			.replace(/YY/g, y - 2000) /* century */
+			.replace(/MM/g, zpadding(m))
+			.replace(/M/g, m)
+			.replace(/DD/g, zpadding(d))
+			.replace(/D/g, d)
+			.replace(/hh/g, zpadding(hou))
+			.replace(/h/g, hou)
+			.replace(/mm/g, zpadding(min))
+			.replace(/m/g, min);
+		} else {
+			str = str.replace(/YYY/gi, y)
+			.replace(/YY/g, y - 2000) /* century */
+			.replace(/DD/g, zpadding(d))
+			.replace(/D/g, d)
+			.replace(/hh/g, zpadding(hou))
+			.replace(/h/g, hou)
+			.replace(/mm/g, zpadding(min))
+			.replace(/m/g, min)
+			.replace(/MMM/g, mmm); /* make sure this is the last replace */
+		}
 		$inp.val(str);
 	};
 
